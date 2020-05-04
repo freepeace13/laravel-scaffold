@@ -30,12 +30,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ($this->app->isLocal()) {
-            Route::get('/devtools', function () {
-                return view('vendor.devtools');
-            });
-        }
-
         parent::boot();
     }
 

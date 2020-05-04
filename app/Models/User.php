@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use TCG\Voyager\Models\User as VoyagerUser;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use TCG\Voyager\Models\User as VoyagerUser;
 
 class User extends VoyagerUser
 {
