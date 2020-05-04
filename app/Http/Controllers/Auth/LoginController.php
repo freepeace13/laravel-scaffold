@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -50,7 +50,9 @@ class LoginController extends Controller
                 return $this->sendLoginResponse($request);
             }
 
-            return $result->plainTextToken;
+            return Response::json([
+                'accessToken' => $result->plainTextToken
+            ], 200);
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
@@ -62,20 +64,24 @@ class LoginController extends Controller
     }
 
     /**
-     * Attempt to log the user into the application.
+     * Log the user out of the application.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return bool
+     * @return \Illuminate\Http\Response
      */
-    protected function attemptLogin(Request $request)
+    public function logout(Request $request)
     {
-        if ($this->isSanctumLogin()) {
-            return $this->attemptSanctumLogin($request);
+        if ($this->isSanctum()) {
+            return $this->handleSanctumLogout();
         }
 
-        return $this->guard()->attempt(
-            $this->credentials($request), $request->filled('remember')
-        );
+        $this->guard()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return $request->wantsJson()
+            ? Response::json([], 204)
+            : redirect('/');
     }
 
     /**
@@ -84,10 +90,8 @@ class LoginController extends Controller
      * @param  Illuminate\Http\Request $request
      * @return mixed
      */
-    protected function attemptSanctumLogin(Request $request)
+    protected function handleSanctumLogin(Request $request)
     {
-        $credentials = $this->credentials($request);
-
         $user = User::firstWhere(
             $this->username(), $request->get($this->username())
         );
@@ -100,11 +104,41 @@ class LoginController extends Controller
     }
 
     /**
+     * Revoke current user access token.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function handleSanctumLogout()
+    {
+        $user = $this->guard()->user();
+        $user->currentAccessToken()->delete();
+
+        return Response::json([], 204);
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        if ($this->isSanctum()) {
+            return $this->handleSanctumLogin($request);
+        }
+
+        return $this->guard()->attempt(
+            $this->credentials($request), $request->filled('remember')
+        );
+    }
+
+    /**
      * Determine the current guard is sanctum
      *
      * @return boolean
      */
-    protected function isSanctumLogin()
+    protected function isSanctum()
     {
         return Auth::getDefaultDriver() === config('auth.guards.sanctum.driver');
     }

@@ -33,6 +33,7 @@ return [
 
         'prefixes' => [
             'api/*',
+            'sanctum/csrf-cookie'
         ],
 
         'exclude' => [
