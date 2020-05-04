@@ -15,7 +15,8 @@
         "laravel/framework": "^7.0",
         "laravel/sanctum": "^2.2",
         "laravel/tinker": "^2.0",
-        "tcg/voyager": "^1.4"
+        "tcg/voyager": "^1.4",
+        "tucker-eric/eloquentfilter": "^2.3"
     },
     "require-dev": {
         "davidhsianturi/laravel-compass": "^1.0",

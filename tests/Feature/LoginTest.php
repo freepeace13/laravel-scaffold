@@ -80,11 +80,13 @@ class LoginTest extends TestCase
             'password' => $password
         ])
         ->assertSuccessful()
-        ->assertJsonStructure(['accessToken']);
+        ->assertJsonStructure([
+            'data' => ['accessToken']
+        ]);
 
         $accessTokenModel = Sanctum::personalAccessTokenModel();
         $accessTokenInstance = $accessTokenModel::findToken(
-            json_decode($response->getContent())->accessToken
+            $response->getData()->data->accessToken
         );
 
         $this->assertTrue(! is_null($accessTokenInstance));

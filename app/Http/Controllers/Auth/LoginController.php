@@ -50,7 +50,7 @@ class LoginController extends Controller
                 return $this->sendLoginResponse($request);
             }
 
-            return Response::json([
+            return $this->responseJson([
                 'accessToken' => $result->plainTextToken
             ], 200);
         }
@@ -80,7 +80,7 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return $request->wantsJson()
-            ? Response::json([], 204)
+            ? $this->responseJson([], 204)
             : redirect('/');
     }
 
@@ -113,7 +113,7 @@ class LoginController extends Controller
         $user = $this->guard()->user();
         $user->currentAccessToken()->delete();
 
-        return Response::json([], 204);
+        return $this->responseJson([], 204);
     }
 
     /**

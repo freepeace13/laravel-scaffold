@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use EloquentFilter\Filterable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use TCG\Voyager\Models\User as VoyagerUser;
 
 class User extends VoyagerUser
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens, Filterable;
 
     /**
      * The attributes that are mass assignable.
